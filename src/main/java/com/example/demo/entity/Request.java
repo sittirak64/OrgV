@@ -26,7 +26,7 @@ public class Request {
     @Column(name = "req_dateinspection")
     private LocalDate dateInspection;
 
-    @Column(name = "req_appointmentday")
+    @Column(name = "req_appointmentday", nullable = true)
     private LocalDate appointmentDay;
 
     @Column(name = "req_status", columnDefinition = "ENUM('pending','approved','rejected') DEFAULT 'pending'")
