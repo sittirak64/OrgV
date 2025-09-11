@@ -7,7 +7,7 @@ public class ResultsDTO {
     public ResultsDTO(String resuShopname, String resuLocation) {
         this.resuShopname = resuShopname;
         this.resuLocation = resuLocation;
-    }
+    } 
 
     public String getResuShopname() {
         return resuShopname;
