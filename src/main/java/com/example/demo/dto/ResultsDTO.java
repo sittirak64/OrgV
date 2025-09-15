@@ -1,27 +1,27 @@
 package com.example.demo.dto;
 
 public class ResultsDTO {
-    private String resuShopname;
-    private String resuLocation;
+    private String shopName;
+    private String location;
 
-    public ResultsDTO(String resuShopname, String resuLocation) {
-        this.resuShopname = resuShopname;
-        this.resuLocation = resuLocation;
-    } 
-
-    public String getResuShopname() {
-        return resuShopname;
+    public ResultsDTO(String shopName, String location) {
+        this.shopName = shopName;
+        this.location = location;
     }
 
-    public void setResuShopname(String resuShopname) {
-        this.resuShopname = resuShopname;
+    public String getShopName() {
+        return shopName;
     }
 
-    public String getResuLocation() {
-        return resuLocation;
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
     }
 
-    public void setResuLocation(String resuLocation) {
-        this.resuLocation = resuLocation;
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

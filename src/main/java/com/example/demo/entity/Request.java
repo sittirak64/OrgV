@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "requests")
@@ -32,6 +33,8 @@ public class Request {
     @Column(name = "req_status", columnDefinition = "ENUM('pending','approved','rejected') DEFAULT 'pending'")
     private String status = "pending";
 
+    @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RequestItem> items;
     // ---------------------------
     // Getter & Setter
     // ---------------------------
@@ -56,4 +59,14 @@ public class Request {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public List<RequestItem> getItems() { return items; }
+    public void setItems(List<RequestItem> items) {
+        this.items = items;
+        if (items != null) {
+            for (RequestItem item : items) {
+                item.setRequest(this); // link item กับ request
+            }
+        }
+    }
 }

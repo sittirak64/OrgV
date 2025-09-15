@@ -20,25 +20,25 @@ public class Shops {
     @Column(name = "shop_name", nullable = false)
     private String shopName;
 
-    @Column(name = "shop_housenumber")
+    @Column(name = "shop_housenumber" , nullable = false)
     private String houseNumber;
 
-    @Column(name = "shop_moo")
+    @Column(name = "shop_moo", nullable = false)
     private String moo;
 
     @Column(name = "shop_street")
     private String street;
 
-    @Column(name = "shop_tumbon")
+    @Column(name = "shop_tumbon", nullable = false)
     private String tumbon;
 
-    @Column(name = "shop_amper")
+    @Column(name = "shop_amper", nullable = false)
     private String amper;
 
-    @Column(name = "shop_province")
+    @Column(name = "shop_province" , nullable = false)
     private String province;
 
-    @Column(name = "shop_phone")
+    @Column(name = "shop_phone", nullable = false)
     private String phone;
 
     @Column(name = "shop_username", unique = true, nullable = false)

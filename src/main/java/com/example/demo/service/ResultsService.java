@@ -15,27 +15,23 @@ public class ResultsService {
         this.repository = repository;
     }
 
-    // บันทึกผลตรวจ
     public Results saveResult(Results result) {
         return repository.save(result);
     }
 
-    // ดึงผลตรวจของร้าน (ตาม shopId)
     public List<Results> getResultsByShop(Long shopId) {
         return repository.findByShopId(shopId);
     }
 
-    // ดึงผลตรวจของพืชชนิดเฉพาะ (resu_vegename)
-    public List<Results> getResultsByVegeName(String resuVegeName) {
-        return repository.findByResuVegeName(resuVegeName);
+    public List<Results> getResultsByVegeName(String vegeName) {
+        return repository.findByVegeName(vegeName);
     }
 
-    // ดึงผลตรวจทั้งหมด
     public List<Results> getAllResults() {
         return repository.findAll();
     }
 
-    // ดึงเฉพาะ shopname + location
+    // ✅ ดึงเฉพาะ shopname + location
     public List<ResultsDTO> getShopnameAndLocation() {
         return repository.findShopnameAndLocation();
     }

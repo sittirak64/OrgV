@@ -26,4 +26,10 @@ public class ShopsController {
         boolean success = shopService.login(shop.getUsername(), shop.getPassword());
         return success ? "Login success" : "Login failed";
     }
+    // แก้ไขข้อมูลร้าน
+    @PutMapping("/edit/{shopId}")
+    public Shops editShop(@PathVariable Long shopId, @RequestBody Shops shop) {
+        return shopService.updateShop(shopId, shop);
+    }
+
 }
