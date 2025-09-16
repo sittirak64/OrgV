@@ -45,9 +45,18 @@ public class ShopsController {
 
     // แก้ไขข้อมูลร้าน
     @PutMapping("/edit/{shopId}")
-    public Shops editShop(@PathVariable Long shopId, @RequestBody Shops shop) {
-        return shopService.updateShop(shopId, shop);
+    public ResponseEntity<?> editShop(@PathVariable Long shopId, @RequestBody Shops shop) {
+        try {
+            Shops updated = shopService.updateShop(shopId, shop);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
     }
+
     // ✅ ดึงข้อมูลร้านค้าโดย shop_id (ไม่ส่ง username, password)
     @GetMapping("/{shopId}")
     public ResponseEntity<?> getShopById(@PathVariable Long shopId) {

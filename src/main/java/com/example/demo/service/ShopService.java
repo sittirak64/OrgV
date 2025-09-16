@@ -34,25 +34,24 @@ public class ShopService {
     }
 
     // Update shop
-    public Shops updateShop(Long shopId, Shops updatedShop) {
+    public Shops updateShop(Long shopId, Shops shop) {
         Shops existingShop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new RuntimeException("Shop not found with id: " + shopId));
 
-        if (updatedShop.getOwnerFname() != null) existingShop.setOwnerFname(updatedShop.getOwnerFname());
-        if (updatedShop.getOwnerLname() != null) existingShop.setOwnerLname(updatedShop.getOwnerLname());
-        if (updatedShop.getShopName() != null) existingShop.setShopName(updatedShop.getShopName());
-        if (updatedShop.getHouseNumber() != null) existingShop.setHouseNumber(updatedShop.getHouseNumber());
-        if (updatedShop.getMoo() != null) existingShop.setMoo(updatedShop.getMoo());
-        if (updatedShop.getStreet() != null) existingShop.setStreet(updatedShop.getStreet());
-        if (updatedShop.getTumbon() != null) existingShop.setTumbon(updatedShop.getTumbon());
-        if (updatedShop.getAmper() != null) existingShop.setAmper(updatedShop.getAmper());
-        if (updatedShop.getProvince() != null) existingShop.setProvince(updatedShop.getProvince());
-        if (updatedShop.getPhone() != null) existingShop.setPhone(updatedShop.getPhone());
-        if (updatedShop.getUsername() != null) existingShop.setUsername(updatedShop.getUsername());
-        if (updatedShop.getPassword() != null) existingShop.setPassword(updatedShop.getPassword());
+        if (shop.getShopName() != null) existingShop.setShopName(shop.getShopName());
+        if (shop.getOwnerFname() != null) existingShop.setOwnerFname(shop.getOwnerFname());
+        if (shop.getOwnerLname() != null) existingShop.setOwnerLname(shop.getOwnerLname());
+        if (shop.getHouseNumber() != null) existingShop.setHouseNumber(shop.getHouseNumber());
+        if (shop.getMoo() != null) existingShop.setMoo(shop.getMoo());
+        if (shop.getStreet() != null) existingShop.setStreet(shop.getStreet());
+        if (shop.getTumbon() != null) existingShop.setTumbon(shop.getTumbon());
+        if (shop.getAmper() != null) existingShop.setAmper(shop.getAmper());
+        if (shop.getProvince() != null) existingShop.setProvince(shop.getProvince());
+        if (shop.getPhone() != null) existingShop.setPhone(shop.getPhone());
 
         return shopRepository.save(existingShop);
     }
+
     public Shops getShopById(Long id) {
         return shopRepository.findById(id).orElse(null);
     }

@@ -11,40 +11,40 @@ public class Shops {
     @Column(name = "shop_id")   // map ให้ตรงกับ shop_id
     private Long id;
 
-    @Column(name = "shop_ownerfname", nullable = false)
+    @Column(name = "shop_ownerfname")
     private String ownerFname;
 
-    @Column(name = "shop_ownerlname", nullable = false)
+    @Column(name = "shop_ownerlname")
     private String ownerLname;
 
-    @Column(name = "shop_name", nullable = false)
+    @Column(name = "shop_name")
     private String shopName;
 
-    @Column(name = "shop_housenumber" , nullable = false)
+    @Column(name = "shop_housenumber" )
     private String houseNumber;
 
-    @Column(name = "shop_moo", nullable = false)
+    @Column(name = "shop_moo")
     private String moo;
 
     @Column(name = "shop_street")
     private String street;
 
-    @Column(name = "shop_tumbon", nullable = false)
+    @Column(name = "shop_tumbon")
     private String tumbon;
 
-    @Column(name = "shop_amper", nullable = false)
+    @Column(name = "shop_amper")
     private String amper;
 
-    @Column(name = "shop_province" , nullable = false)
+    @Column(name = "shop_province" )
     private String province;
 
-    @Column(name = "shop_phone", nullable = false)
+    @Column(name = "shop_phone")
     private String phone;
 
-    @Column(name = "shop_username", unique = true, nullable = false)
+    @Column(name = "shop_username", unique = true)
     private String username;
 
-    @Column(name = "shop_pass", nullable = false)
+    @Column(name = "shop_pass")
     private String password;
 
     // ---------------------------
