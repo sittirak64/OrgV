@@ -5,7 +5,7 @@ import com.example.demo.service.ShopService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.example.demo.dto.ShopsDTO;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,4 +48,29 @@ public class ShopsController {
     public Shops editShop(@PathVariable Long shopId, @RequestBody Shops shop) {
         return shopService.updateShop(shopId, shop);
     }
+    // ✅ ดึงข้อมูลร้านค้าโดย shop_id (ไม่ส่ง username, password)
+    @GetMapping("/{shopId}")
+    public ResponseEntity<?> getShopById(@PathVariable Long shopId) {
+        Shops shop = shopService.getShopById(shopId);
+
+        if (shop != null) {
+            ShopsDTO dto = new ShopsDTO(
+                    shop.getId(),
+                    shop.getShopName(),
+                    shop.getOwnerFname(),
+                    shop.getOwnerLname(),
+                    shop.getHouseNumber(),
+                    shop.getMoo(),
+                    shop.getStreet(),
+                    shop.getTumbon(),
+                    shop.getAmper(),
+                    shop.getProvince(),
+                    shop.getPhone()
+            );
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Shop not found");
+        }
+    }
+
 }

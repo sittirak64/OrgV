@@ -53,4 +53,7 @@ public class ShopService {
 
         return shopRepository.save(existingShop);
     }
+    public Shops getShopById(Long id) {
+        return shopRepository.findById(id).orElse(null);
+    }
 }
