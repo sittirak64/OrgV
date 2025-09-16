@@ -24,10 +24,13 @@ public class ShopService {
         return "Register success";
     }
 
-    // Login
-    public boolean login(String username, String password) {
+    // ✅ Login -> return Shops แทน boolean
+    public Shops login(String username, String password) {
         Optional<Shops> shop = shopRepository.findByUsername(username);
-        return shop.isPresent() && shop.get().getPassword().equals(password);
+        if (shop.isPresent() && shop.get().getPassword().equals(password)) {
+            return shop.get(); // ส่งกลับทั้ง object
+        }
+        return null; // ถ้า login ไม่สำเร็จ
     }
 
     // Update shop
@@ -50,5 +53,4 @@ public class ShopService {
 
         return shopRepository.save(existingShop);
     }
-
 }

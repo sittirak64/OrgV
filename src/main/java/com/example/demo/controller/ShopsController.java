@@ -2,10 +2,15 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Shops;
 import com.example.demo.service.ShopService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
-@RequestMapping("/api/shops")  // เปลี่ยนให้ตรงกับ Shops
+@RequestMapping("/api/shops")
 public class ShopsController {
 
     private final ShopService shopService;
@@ -20,16 +25,27 @@ public class ShopsController {
         return shopService.register(shop);
     }
 
-    // ล็อกอิน
+    // ✅ ล็อกอิน -> return JSON { success: true, shop_id: xxx }
     @PostMapping("/login")
-    public String login(@RequestBody Shops shop) {
-        boolean success = shopService.login(shop.getUsername(), shop.getPassword());
-        return success ? "Login success" : "Login failed";
+    public ResponseEntity<?> login(@RequestBody Shops shop) {
+        Shops foundShop = shopService.login(shop.getUsername(), shop.getPassword());
+
+        if (foundShop != null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("shop_id", foundShop.getId());
+            return ResponseEntity.ok(response);
+        } else {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Invalid username or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
     }
+
     // แก้ไขข้อมูลร้าน
     @PutMapping("/edit/{shopId}")
     public Shops editShop(@PathVariable Long shopId, @RequestBody Shops shop) {
         return shopService.updateShop(shopId, shop);
     }
-
 }
