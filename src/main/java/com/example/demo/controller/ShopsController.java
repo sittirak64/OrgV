@@ -81,5 +81,4 @@ public class ShopsController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Shop not found");
         }
     }
-
 }
