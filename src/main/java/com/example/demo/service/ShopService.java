@@ -48,6 +48,7 @@ public class ShopService {
         if (shop.getAmper() != null) existingShop.setAmper(shop.getAmper());
         if (shop.getProvince() != null) existingShop.setProvince(shop.getProvince());
         if (shop.getPhone() != null) existingShop.setPhone(shop.getPhone());
+        if (shop.getPassword() != null) existingShop.setPassword(shop.getPassword());
 
         return shopRepository.save(existingShop);
     }

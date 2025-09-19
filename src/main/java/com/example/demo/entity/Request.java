@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,13 +14,9 @@ public class Request {
     @Column(name = "req_id")
     private Long id;
 
-    // ความสัมพันธ์กับร้านค้า
     @ManyToOne
     @JoinColumn(name = "shop_id", nullable = false)
     private Shops shop;
-
-    @Column(name = "req_vege_name", nullable = false)
-    private String vegeName;
 
     @Column(name = "req_shoplocation")
     private String shopLocation;
@@ -34,19 +31,14 @@ public class Request {
     private String status = "pending";
 
     @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RequestItem> items;
-    // ---------------------------
-    // Getter & Setter
-    // ---------------------------
+    private List<VegeRequest> vegeList = new ArrayList<>();
 
+    // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
     public Shops getShop() { return shop; }
     public void setShop(Shops shop) { this.shop = shop; }
-
-    public String getVegeName() { return vegeName; }
-    public void setVegeName(String vegeName) { this.vegeName = vegeName; }
 
     public String getShopLocation() { return shopLocation; }
     public void setShopLocation(String shopLocation) { this.shopLocation = shopLocation; }
@@ -60,13 +52,6 @@ public class Request {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public List<RequestItem> getItems() { return items; }
-    public void setItems(List<RequestItem> items) {
-        this.items = items;
-        if (items != null) {
-            for (RequestItem item : items) {
-                item.setRequest(this); // link item กับ request
-            }
-        }
-    }
+    public List<VegeRequest> getVegeList() { return vegeList; }
+    public void setVegeList(List<VegeRequest> vegeList) { this.vegeList = vegeList; }
 }
