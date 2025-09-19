@@ -38,6 +38,7 @@ public class ShopService {
         Shops existingShop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new RuntimeException("Shop not found with id: " + shopId));
 
+        // Update ฟิลด์ทั่วไป
         if (shop.getShopName() != null) existingShop.setShopName(shop.getShopName());
         if (shop.getOwnerFname() != null) existingShop.setOwnerFname(shop.getOwnerFname());
         if (shop.getOwnerLname() != null) existingShop.setOwnerLname(shop.getOwnerLname());
@@ -48,7 +49,20 @@ public class ShopService {
         if (shop.getAmper() != null) existingShop.setAmper(shop.getAmper());
         if (shop.getProvince() != null) existingShop.setProvince(shop.getProvince());
         if (shop.getPhone() != null) existingShop.setPhone(shop.getPhone());
-        if (shop.getPassword() != null) existingShop.setPassword(shop.getPassword());
+
+        // Update password logic: ตรวจสอบ oldPassword ก่อน
+        if (shop.getPassword() != null) {
+            // สมมุติ frontend ส่ง oldPassword ไว้ในช่อง username (หรือ field ใดก็ได้)
+            // ตัวอย่างสมมุติว่า Shops entity มี field oldPassword (ไม่ map DB)
+            // หรือคุณอาจส่งมาพร้อม password ผ่าน JSON แล้ว map เข้ามาใน entity (แต่ไม่บันทึก DB)
+            String oldPassword = shop.getOldPassword(); // ต้องสร้าง getter/setter ชั่วคราวใน entity
+
+            if (oldPassword == null || !existingShop.getPassword().equals(oldPassword)) {
+                throw new RuntimeException("รหัสผ่านเก่าไม่ถูกต้อง");
+            }
+
+            existingShop.setPassword(shop.getPassword()); // ตั้ง password ใหม่
+        }
 
         return shopRepository.save(existingShop);
     }

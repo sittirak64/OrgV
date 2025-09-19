@@ -44,16 +44,23 @@ public class ShopsController {
     }
 
     // แก้ไขข้อมูลร้าน
-    @PutMapping("/edit/{shopId}")
-    public ResponseEntity<?> editShop(@PathVariable Long shopId, @RequestBody Shops shop) {
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<Map<String, Object>> updateShop(
+            @PathVariable Long id,
+            @RequestBody Shops shop) {
+
+        Map<String, Object> response = new HashMap<>();
         try {
-            Shops updated = shopService.updateShop(shopId, shop);
-            return ResponseEntity.ok(updated);
+            shopService.updateShop(id, shop);  // service จะตรวจสอบ oldPassword ด้วยถ้าเปลี่ยน password
+
+            response.put("success", true);
+            response.put("message", "Updated successfully");
+            return ResponseEntity.ok(response);
+
         } catch (RuntimeException e) {
-            Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseEntity.badRequest().body(response);
         }
     }
 

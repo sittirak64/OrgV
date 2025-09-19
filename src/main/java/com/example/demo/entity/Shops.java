@@ -8,7 +8,7 @@ public class Shops {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "shop_id")   // map ให้ตรงกับ shop_id
+    @Column(name = "shop_id")
     private Long id;
 
     @Column(name = "shop_ownerfname")
@@ -20,7 +20,7 @@ public class Shops {
     @Column(name = "shop_name")
     private String shopName;
 
-    @Column(name = "shop_housenumber" )
+    @Column(name = "shop_housenumber")
     private String houseNumber;
 
     @Column(name = "shop_moo")
@@ -35,7 +35,7 @@ public class Shops {
     @Column(name = "shop_amper")
     private String amper;
 
-    @Column(name = "shop_province" )
+    @Column(name = "shop_province")
     private String province;
 
     @Column(name = "shop_phone")
@@ -46,6 +46,10 @@ public class Shops {
 
     @Column(name = "shop_pass")
     private String password;
+
+    // 👇 เพิ่ม field สำหรับตรวจสอบ oldPassword แต่ไม่ map ไป DB
+    @Transient
+    private String oldPassword;
 
     // ---------------------------
     // Getter and Setter
@@ -89,4 +93,7 @@ public class Shops {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    public String getOldPassword() { return oldPassword; }
+    public void setOldPassword(String oldPassword) { this.oldPassword = oldPassword; }
 }
