@@ -1,10 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Request;
-import com.example.demo.entity.VegeRequest;
 import com.example.demo.repository.RequestRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.demo.dto.RequestsDTO;
 
 import java.util.List;
 
@@ -16,20 +16,6 @@ public class RequestService {
     public RequestService(RequestRepository repository) {
         this.repository = repository;
     }
-
-    // ---------------------------
-    // สร้าง Request พร้อม VegeRequest หลายตัว
-    // ---------------------------
-    @Transactional
-    public Request createRequest(Request request) {
-        if (request.getVegeList() != null) {
-            for (VegeRequest vege : request.getVegeList()) {
-                vege.setRequest(request); // ตั้งความสัมพันธ์
-            }
-        }
-        return repository.save(request);
-    }
-
     // ---------------------------
     // ดึง Request ตาม shopId
     // ---------------------------
@@ -42,6 +28,16 @@ public class RequestService {
     // ---------------------------
     public List<Request> getRequestsByStatus(String status) {
         return repository.findByStatus(status);
+    }
+
+    public RequestsDTO createRequest(Request request) {
+        Request saved = repository.save(request);
+        return new RequestsDTO(
+                saved.getShopLocation(),
+                saved.getDateInspection(),
+                saved.getAppointmentDay(),
+                saved.getStatus()
+        );
     }
 
     // ---------------------------

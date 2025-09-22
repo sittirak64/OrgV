@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.entity.Request;
 import com.example.demo.service.RequestService;
 import org.springframework.web.bind.annotation.*;
+import com.example.demo.dto.RequestsDTO;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class RequestController {
 
     // 📌 สร้างคำขอใหม่
     @PostMapping("/create")
-    public Request createRequest(@RequestBody Request request) {
+    public RequestsDTO createRequest(@RequestBody Request request) {
         return service.createRequest(request);
     }
 

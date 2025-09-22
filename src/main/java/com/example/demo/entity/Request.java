@@ -30,9 +30,6 @@ public class Request {
     @Column(name = "req_status", columnDefinition = "ENUM('pending','approved','rejected') DEFAULT 'pending'")
     private String status = "pending";
 
-    @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<VegeRequest> vegeList = new ArrayList<>();
-
     // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -52,6 +49,4 @@ public class Request {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public List<VegeRequest> getVegeList() { return vegeList; }
-    public void setVegeList(List<VegeRequest> vegeList) { this.vegeList = vegeList; }
 }
