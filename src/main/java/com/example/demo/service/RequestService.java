@@ -34,6 +34,7 @@ public class RequestService {
         Request saved = repository.save(request);
         return new RequestsDTO(
                 saved.getShopLocation(),
+                saved.getVegeName(),
                 saved.getDateInspection(),
                 saved.getAppointmentDay(),
                 saved.getStatus()

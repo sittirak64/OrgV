@@ -4,12 +4,17 @@ import java.time.LocalDate;
 
 public class RequestsDTO {
     private String shopLocation;
+    private String vegeName;
     private LocalDate dateInspection;
     private LocalDate appointmentDay;
     private String status;
 
-    // constructor
-    public RequestsDTO(String shopLocation, LocalDate dateInspection, LocalDate appointmentDay, String status) {
+    public RequestsDTO(String shopLocation,
+                       String vegeName,
+                       LocalDate dateInspection,
+                       LocalDate appointmentDay,
+                       String status) {
+        this.vegeName = vegeName;
         this.shopLocation = shopLocation;
         this.dateInspection = dateInspection;
         this.appointmentDay = appointmentDay;
@@ -21,4 +26,5 @@ public class RequestsDTO {
     public LocalDate getDateInspection() { return dateInspection; }
     public LocalDate getAppointmentDay() { return appointmentDay; }
     public String getStatus() { return status; }
+    public String getVegeName() { return vegeName; }
 }

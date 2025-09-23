@@ -2,8 +2,6 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "requests")
@@ -17,6 +15,9 @@ public class Request {
     @ManyToOne
     @JoinColumn(name = "shop_id", nullable = false)
     private Shops shop;
+
+    @Column(name = "req_vegename")
+    private String vegeName;
 
     @Column(name = "req_shoplocation")
     private String shopLocation;
@@ -39,6 +40,9 @@ public class Request {
 
     public String getShopLocation() { return shopLocation; }
     public void setShopLocation(String shopLocation) { this.shopLocation = shopLocation; }
+
+    public String getVegeName() { return vegeName; }
+    public void setVegeName(String vegeName) { this.vegeName = vegeName; }
 
     public LocalDate getDateInspection() { return dateInspection; }
     public void setDateInspection(LocalDate dateInspection) { this.dateInspection = dateInspection; }
