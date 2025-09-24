@@ -69,8 +69,8 @@ public class RequestController {
         return service.updateAppointmentDay(id, appointmentDay);
     }
 
-    @GetMapping("/grouped-by-date")
-    public List<GroupedRequestDTO> getGroupedByDate() {
-        return service.getRequestsGroupedByDateInspection();
+    @GetMapping("/grouped-by-date/{shopId}")
+    public List<GroupedRequestDTO> getGroupedByDateByShop(@PathVariable Long shopId) {
+        return service.getRequestsGroupedByDateInspectionByShop(shopId);
     }
 }

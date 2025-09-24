@@ -70,10 +70,10 @@ public class RequestService {
         repository.saveAll(requests);
     }
 
-    public List<GroupedRequestDTO> getRequestsGroupedByDateInspection() {
-        List<Request> allRequests = repository.findAll();
+    public List<GroupedRequestDTO> getRequestsGroupedByDateInspectionByShop(Long shopId) {
+        List<Request> requests = repository.findByShopId(shopId);
 
-        Map<LocalDate, List<RequestsDTO>> grouped = allRequests.stream()
+        Map<LocalDate, List<RequestsDTO>> grouped = requests.stream()
                 .map(req -> new RequestsDTO(
                         req.getShopLocation(),
                         req.getVegeName(),
