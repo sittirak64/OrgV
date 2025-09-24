@@ -2,11 +2,16 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Request;
 import com.example.demo.repository.RequestRepository;
+import com.example.demo.dto.RequestsDTO;
+import com.example.demo.dto.GroupedRequestDTO;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.example.demo.dto.RequestsDTO;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class RequestService {
@@ -16,16 +21,11 @@ public class RequestService {
     public RequestService(RequestRepository repository) {
         this.repository = repository;
     }
-    // ---------------------------
-    // ดึง Request ตาม shopId
-    // ---------------------------
+
     public List<Request> getRequestsByShop(Long shopId) {
         return repository.findByShopId(shopId);
     }
 
-    // ---------------------------
-    // ดึง Request ตาม status
-    // ---------------------------
     public List<Request> getRequestsByStatus(String status) {
         return repository.findByStatus(status);
     }
@@ -41,9 +41,6 @@ public class RequestService {
         );
     }
 
-    // ---------------------------
-    // อัพเดต status ของ Request
-    // ---------------------------
     @Transactional
     public Request updateStatus(Long requestId, String status) {
         Request request = repository.findById(requestId)
@@ -52,11 +49,42 @@ public class RequestService {
         return repository.save(request);
     }
 
-    // ---------------------------
-    // ดึง Request ทั้งหมด
-    // ---------------------------
     public List<Request> getAllRequests() {
         return repository.findAll();
     }
 
+    @Transactional
+    public Request updateAppointmentDay(Long requestId, LocalDate appointmentDay) {
+        Request request = repository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found with id: " + requestId));
+        request.setAppointmentDay(appointmentDay);
+        return repository.save(request);
+    }
+
+    @Transactional
+    public void updateAppointmentDayForGroup(Long shopId, LocalDate dateInspection, LocalDate appointmentDay) {
+        List<Request> requests = repository.findByShopIdAndDateInspection(shopId, dateInspection);
+        for (Request req : requests) {
+            req.setAppointmentDay(appointmentDay);
+        }
+        repository.saveAll(requests);
+    }
+
+    public List<GroupedRequestDTO> getRequestsGroupedByDateInspection() {
+        List<Request> allRequests = repository.findAll();
+
+        Map<LocalDate, List<RequestsDTO>> grouped = allRequests.stream()
+                .map(req -> new RequestsDTO(
+                        req.getShopLocation(),
+                        req.getVegeName(),
+                        req.getDateInspection(),
+                        req.getAppointmentDay(),
+                        req.getStatus()
+                ))
+                .collect(Collectors.groupingBy(RequestsDTO::getDateInspection));
+
+        return grouped.entrySet().stream()
+                .map(e -> new GroupedRequestDTO(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
+    }
 }

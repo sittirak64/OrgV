@@ -4,8 +4,10 @@ import com.example.demo.entity.Request;
 import com.example.demo.service.RequestService;
 import org.springframework.web.bind.annotation.*;
 import com.example.demo.dto.RequestsDTO;
-
+import com.example.demo.dto.GroupedRequestDTO;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/requests")
@@ -45,5 +47,30 @@ public class RequestController {
     @PutMapping("/{id}/status")
     public Request updateStatus(@PathVariable Long id, @RequestParam String status) {
         return service.updateStatus(id, status);
+    }
+    // 📌 อัปเดตวันนัดตรวจสอบ (appointmentDay)
+    @PutMapping("/appointment-group")
+    public String updateAppointmentDayForGroup(@RequestBody Map<String, String> body) {
+
+        Long shopId = Long.parseLong(body.get("shopId"));
+        LocalDate dateInspection = LocalDate.parse(body.get("dateInspection"));
+        LocalDate appointmentDay = LocalDate.parse(body.get("appointmentDay"));
+
+        service.updateAppointmentDayForGroup(shopId, dateInspection, appointmentDay);
+
+        return "Appointment updated for all requests in this group";
+    }
+
+    @PutMapping("/{id}/appointment")
+    public Request updateAppointmentDay(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+        LocalDate appointmentDay = LocalDate.parse(body.get("appointmentDay"));
+        return service.updateAppointmentDay(id, appointmentDay);
+    }
+
+    @GetMapping("/grouped-by-date")
+    public List<GroupedRequestDTO> getGroupedByDate() {
+        return service.getRequestsGroupedByDateInspection();
     }
 }
