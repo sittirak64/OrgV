@@ -5,6 +5,7 @@ import com.example.demo.service.RequestService;
 import org.springframework.web.bind.annotation.*;
 import com.example.demo.dto.RequestsDTO;
 import com.example.demo.dto.GroupedRequestDTO;
+import com.example.demo.dto.AllRequestsGroupedDTO;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class RequestController {
 
     // 📌 ดึงคำขอทั้งหมด
     @GetMapping("/all")
-    public Map<LocalDate, List<RequestsDTO>> getAllRequestsGrouped() {
+    public List<AllRequestsGroupedDTO> getAllRequestsGrouped() {
         return service.getAllGroupedByDate();
     }
 

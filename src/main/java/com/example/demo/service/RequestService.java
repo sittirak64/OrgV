@@ -5,6 +5,7 @@ import com.example.demo.repository.RequestRepository;
 import com.example.demo.dto.RequestsDTO;
 import com.example.demo.dto.GroupedRequestDTO;
 import com.example.demo.dto.ShopsDTO;
+import com.example.demo.dto.AllRequestsGroupedDTO;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,10 +121,10 @@ public class RequestService {
                 .collect(Collectors.toList());
     }
 
-    public Map<LocalDate, List<RequestsDTO>> getAllGroupedByDate() {
+    public List<AllRequestsGroupedDTO> getAllGroupedByDate() {
         List<Request> requests = repository.findAll();
 
-        return requests.stream()
+        Map<LocalDate, List<RequestsDTO>> grouped = requests.stream()
                 .map(r -> new RequestsDTO(
                         r.getId(),
                         new ShopsDTO(
@@ -146,5 +147,9 @@ public class RequestService {
                         r.getStatus()
                 ))
                 .collect(Collectors.groupingBy(RequestsDTO::getDateInspection));
+
+        return grouped.entrySet().stream()
+                .map(e -> new AllRequestsGroupedDTO(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
     }
 }
