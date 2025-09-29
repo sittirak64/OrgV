@@ -27,8 +27,8 @@ public class RequestController {
 
     // 📌 ดึงคำขอทั้งหมด
     @GetMapping("/all")
-    public List<Request> getAllRequests() {
-        return service.getAllRequests();  // ต้องไปเพิ่ม method นี้ใน service
+    public Map<LocalDate, List<RequestsDTO>> getAllRequestsGrouped() {
+        return service.getAllGroupedByDate();
     }
 
     // 📌 ดึงคำขอตาม shopId

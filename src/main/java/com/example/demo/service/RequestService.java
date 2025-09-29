@@ -4,6 +4,7 @@ import com.example.demo.entity.Request;
 import com.example.demo.repository.RequestRepository;
 import com.example.demo.dto.RequestsDTO;
 import com.example.demo.dto.GroupedRequestDTO;
+import com.example.demo.dto.ShopsDTO;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +33,26 @@ public class RequestService {
 
     public RequestsDTO createRequest(Request request) {
         Request saved = repository.save(request);
+
+        ShopsDTO shopDTO = new ShopsDTO(
+                saved.getShop().getId(),
+                saved.getShop().getShopName(),
+                saved.getShop().getOwnerFname(),
+                saved.getShop().getOwnerLname(),
+                saved.getShop().getHouseNumber(),
+                saved.getShop().getMoo(),
+                saved.getShop().getStreet(),
+                saved.getShop().getTumbon(),
+                saved.getShop().getAmper(),
+                saved.getShop().getProvince(),
+                saved.getShop().getPhone()
+        );
+
         return new RequestsDTO(
-                saved.getShopLocation(),
+                saved.getId(),
+                shopDTO,
                 saved.getVegeName(),
+                saved.getShopLocation(),
                 saved.getDateInspection(),
                 saved.getAppointmentDay(),
                 saved.getStatus()
@@ -74,17 +92,59 @@ public class RequestService {
         List<Request> requests = repository.findByShopId(shopId);
 
         Map<LocalDate, List<RequestsDTO>> grouped = requests.stream()
-                .map(req -> new RequestsDTO(
-                        req.getShopLocation(),
-                        req.getVegeName(),
-                        req.getDateInspection(),
-                        req.getAppointmentDay(),
-                        req.getStatus()
+                .map(r -> new RequestsDTO(
+                        r.getId(),
+                        new ShopsDTO(
+                                r.getShop().getId(),
+                                r.getShop().getShopName(),
+                                r.getShop().getOwnerFname(),
+                                r.getShop().getOwnerLname(),
+                                r.getShop().getHouseNumber(),
+                                r.getShop().getMoo(),
+                                r.getShop().getStreet(),
+                                r.getShop().getTumbon(),
+                                r.getShop().getAmper(),
+                                r.getShop().getProvince(),
+                                r.getShop().getPhone()
+                        ),
+                        r.getVegeName(),
+                        r.getShopLocation(),
+                        r.getDateInspection(),
+                        r.getAppointmentDay(),
+                        r.getStatus()
                 ))
                 .collect(Collectors.groupingBy(RequestsDTO::getDateInspection));
 
         return grouped.entrySet().stream()
                 .map(e -> new GroupedRequestDTO(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
+    }
+
+    public Map<LocalDate, List<RequestsDTO>> getAllGroupedByDate() {
+        List<Request> requests = repository.findAll();
+
+        return requests.stream()
+                .map(r -> new RequestsDTO(
+                        r.getId(),
+                        new ShopsDTO(
+                                r.getShop().getId(),
+                                r.getShop().getShopName(),
+                                r.getShop().getOwnerFname(),
+                                r.getShop().getOwnerLname(),
+                                r.getShop().getHouseNumber(),
+                                r.getShop().getMoo(),
+                                r.getShop().getStreet(),
+                                r.getShop().getTumbon(),
+                                r.getShop().getAmper(),
+                                r.getShop().getProvince(),
+                                r.getShop().getPhone()
+                        ),
+                        r.getVegeName(),
+                        r.getShopLocation(),
+                        r.getDateInspection(),
+                        r.getAppointmentDay(),
+                        r.getStatus()
+                ))
+                .collect(Collectors.groupingBy(RequestsDTO::getDateInspection));
     }
 }
