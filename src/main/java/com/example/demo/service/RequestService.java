@@ -152,4 +152,39 @@ public class RequestService {
                 .map(e -> new AllRequestsGroupedDTO(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
     }
+
+    public List<GroupedRequestDTO> getRequestsGroupedByDate(Long shopId) {
+        List<Request> requests = repository.findByShopId(shopId);
+
+        // Group by dateInspection
+        Map<LocalDate, List<RequestsDTO>> grouped = requests.stream()
+                .map(r -> new RequestsDTO(
+                        r.getId(),
+                        new ShopsDTO(
+                                r.getShop().getId(),
+                                r.getShop().getShopName(),
+                                r.getShop().getOwnerFname(),
+                                r.getShop().getOwnerLname(),
+                                r.getShop().getHouseNumber(),
+                                r.getShop().getMoo(),
+                                r.getShop().getStreet(),
+                                r.getShop().getTumbon(),
+                                r.getShop().getAmper(),
+                                r.getShop().getProvince(),
+                                r.getShop().getPhone()
+                        ),
+                        r.getVegeName(),
+                        r.getShopLocation(),
+                        r.getDateInspection(),
+                        r.getAppointmentDay(),
+                        r.getStatus()
+                ))
+                .collect(Collectors.groupingBy(RequestsDTO::getDateInspection));
+
+        // แปลงเป็น List<GroupedRequestDTO>
+        return grouped.entrySet().stream()
+                .map(entry -> new GroupedRequestDTO(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
 }

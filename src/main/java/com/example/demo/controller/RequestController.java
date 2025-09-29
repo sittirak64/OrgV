@@ -34,8 +34,8 @@ public class RequestController {
 
     // 📌 ดึงคำขอตาม shopId
     @GetMapping("/shop/{shopId}")
-    public List<Request> getRequestsByShop(@PathVariable Long shopId) {
-        return service.getRequestsByShop(shopId);
+    public List<GroupedRequestDTO> getRequestsGrouped(@PathVariable Long shopId) {
+        return service.getRequestsGroupedByDate(shopId);
     }
 
     // 📌 ดึงคำขอตามสถานะ
