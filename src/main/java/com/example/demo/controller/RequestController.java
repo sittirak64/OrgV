@@ -45,10 +45,17 @@ public class RequestController {
     }
 
     // 📌 อัปเดตสถานะคำขอ (pending → approved/rejected)
-    @PutMapping("/{id}/status")
-    public Request updateStatus(@PathVariable Long id, @RequestParam String status) {
-        return service.updateStatus(id, status);
+    @PutMapping("/status-by-appointment")
+    public String updateStatusByAppointment(@RequestBody Map<String, String> body) {
+        Long shopId = Long.parseLong(body.get("shopId"));   // ✅ ระบุร้าน
+        LocalDate appointmentDay = LocalDate.parse(body.get("appointmentDay"));
+        String status = body.get("status");
+
+        service.updateStatusByAppointmentDayAndShop(shopId, appointmentDay, status);
+
+        return "Status updated for shopId: " + shopId + " with appointmentDay: " + appointmentDay;
     }
+
     // 📌 อัปเดตวันนัดตรวจสอบ (appointmentDay)
     @PutMapping("/appointment-group")
     public String updateAppointmentDayForGroup(@RequestBody Map<String, String> body) {

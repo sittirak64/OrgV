@@ -14,4 +14,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
     // สำหรับอัปเดต appointmentDay ทั้งกลุ่ม
     List<Request> findByShopIdAndDateInspection(Long shopId, LocalDate dateInspection);
+    List<Request> findByShopIdAndAppointmentDay(Long shopId, LocalDate appointmentDay);
+
 }

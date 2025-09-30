@@ -88,6 +88,15 @@ public class RequestService {
         }
         repository.saveAll(requests);
     }
+    @Transactional
+    public void updateStatusByAppointmentDayAndShop(Long shopId, LocalDate appointmentDay, String status) {
+        List<Request> requests = repository.findByShopIdAndAppointmentDay(shopId, appointmentDay);
+        for (Request req : requests) {
+            req.setStatus(status);
+        }
+        repository.saveAll(requests);
+    }
+
 
     public List<GroupedRequestDTO> getRequestsGroupedByDateInspectionByShop(Long shopId) {
         List<Request> requests = repository.findByShopId(shopId);
