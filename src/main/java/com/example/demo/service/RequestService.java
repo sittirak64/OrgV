@@ -195,5 +195,34 @@ public class RequestService {
                 .map(entry -> new GroupedRequestDTO(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
     }
+    public GroupedRequestDTO getRequestsGroupedByDateInspectionByShopAndDate(Long shopId, LocalDate dateInspection) {
+        List<Request> requests = repository.findByShopIdAndDateInspection(shopId, dateInspection);
+
+        List<RequestsDTO> dtoList = requests.stream()
+                .map(r -> new RequestsDTO(
+                        r.getId(),
+                        new ShopsDTO(
+                                r.getShop().getId(),
+                                r.getShop().getShopName(),
+                                r.getShop().getOwnerFname(),
+                                r.getShop().getOwnerLname(),
+                                r.getShop().getHouseNumber(),
+                                r.getShop().getMoo(),
+                                r.getShop().getStreet(),
+                                r.getShop().getTumbon(),
+                                r.getShop().getAmper(),
+                                r.getShop().getProvince(),
+                                r.getShop().getPhone()
+                        ),
+                        r.getVegeName(),
+                        r.getShopLocation(),
+                        r.getDateInspection(),
+                        r.getAppointmentDay(),
+                        r.getStatus()
+                ))
+                .collect(Collectors.toList());
+
+        return new GroupedRequestDTO(dateInspection, dtoList);
+    }
 
 }
