@@ -19,9 +19,19 @@ public class ResultController {
 
     // สร้างผลตรวจใหม่
     @PostMapping("/create")
-    public Results createResult(@RequestBody Results result) {
-        return service.saveResult(result);
+    public ResultsDTO createResult(@RequestBody Results result) {
+        Results saved = service.saveResult(result);
+
+        // ✅ map ไปเป็น DTO เพื่อไม่ให้ shop.* โผล่มา
+        return new ResultsDTO(
+                saved.getShop().getId(),
+                saved.getShopName(),
+                saved.getVegeName(),
+                saved.getResult(),
+                saved.getLocation()
+        );
     }
+
 
     // ดึงผลตรวจตาม shopId
     @GetMapping("/shop/{shopId}")

@@ -18,12 +18,6 @@ public class Results {
     @Column(name = "resu_shopname", nullable = false)
     private String shopName;
 
-    @Column(name = "resu_ownerfname", nullable = false)
-    private String ownerFname;
-
-    @Column(name = "resu_ownerlname", nullable = false)
-    private String ownerLname;
-
     @Column(name = "resu_housenumber")
     private String houseNumber;
 
@@ -70,12 +64,6 @@ public class Results {
 
     public String getShopName() { return shopName; }
     public void setShopName(String shopName) { this.shopName = shopName; }
-
-    public String getOwnerFname() { return ownerFname; }
-    public void setOwnerFname(String ownerFname) { this.ownerFname = ownerFname; }
-
-    public String getOwnerLname() { return ownerLname; }
-    public void setOwnerLname(String ownerLname) { this.ownerLname = ownerLname; }
 
     public String getHouseNumber() { return houseNumber; }
     public void setHouseNumber(String houseNumber) { this.houseNumber = houseNumber; }

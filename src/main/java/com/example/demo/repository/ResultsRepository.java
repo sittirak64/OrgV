@@ -10,6 +10,6 @@ public interface ResultsRepository extends JpaRepository<Results, Long> {
     List<Results> findByShopId(Long shopId);
     List<Results> findByVegeName(String vegeName);
 
-    @Query("SELECT new com.example.demo.dto.ResultsDTO(r.shopName, r.location) FROM Results r")
+    @Query("SELECT new com.example.demo.dto.ResultsDTO(r.shop.id, r.shopName, r.vegeName, r.result, r.location) FROM Results r")
     List<ResultsDTO> findShopnameAndLocation();
 }

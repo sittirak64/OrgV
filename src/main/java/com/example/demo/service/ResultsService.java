@@ -27,12 +27,34 @@ public class ResultsService {
         return repository.findByVegeName(vegeName);
     }
 
+    // ✅ อันนี้ return Entity
     public List<Results> getAllResults() {
         return repository.findAll();
     }
 
-    // ✅ ดึงเฉพาะ shopname + location
+    // ✅ อันนี้ return DTO (เลือกฟิลด์)
+    public List<ResultsDTO> getAllResultsDTO() {
+        return repository.findAll().stream()
+                .map(r -> new ResultsDTO(
+                        r.getShop().getId(),   // ✅ ดึง shopId
+                        r.getShopName(),
+                        r.getVegeName(),
+                        r.getResult(),
+                        r.getLocation()
+                ))
+                .toList();
+    }
+
+    // ✅ ถ้าอยากดึงเฉพาะ shopName + location
     public List<ResultsDTO> getShopnameAndLocation() {
-        return repository.findShopnameAndLocation();
+        return repository.findAll().stream()
+                .map(r -> new ResultsDTO(
+                        r.getShop().getId(),
+                        r.getShopName(),
+                        null,       // vegeName ไม่เอา
+                        null,       // result ไม่เอา
+                        r.getLocation()
+                ))
+                .toList();
     }
 }
