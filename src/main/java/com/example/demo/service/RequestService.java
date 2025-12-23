@@ -1,14 +1,16 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.AllRequestsGroupedDTO;
+import com.example.demo.dto.GroupedRequestDTO;
+import com.example.demo.dto.RequestsDTO;
+import com.example.demo.dto.ShopsDTO;
 import com.example.demo.entity.Request;
 import com.example.demo.repository.RequestRepository;
-import com.example.demo.dto.RequestsDTO;
-import com.example.demo.dto.GroupedRequestDTO;
-import com.example.demo.dto.ShopsDTO;
-import com.example.demo.dto.AllRequestsGroupedDTO;
-
+import com.example.demo.repository.ResultsRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,10 +21,17 @@ import java.util.stream.Collectors;
 public class RequestService {
 
     private final RequestRepository repository;
+    private final ResultsRepository resultsRepository;
 
-    public RequestService(RequestRepository repository) {
+    public RequestService(RequestRepository repository,
+                          ResultsRepository resultsRepository) {
         this.repository = repository;
+        this.resultsRepository = resultsRepository;
     }
+
+    // ==========================
+    // Basic queries
+    // ==========================
 
     public List<Request> getRequestsByShop(Long shopId) {
         return repository.findByShopId(shopId);
@@ -32,50 +41,53 @@ public class RequestService {
         return repository.findByStatus(status);
     }
 
-    public RequestsDTO createRequest(Request request) {
-        Request saved = repository.save(request);
+    public List<Request> getAllRequests() {
+        return repository.findAll();
+    }
 
-        ShopsDTO shopDTO = new ShopsDTO(
-                saved.getShop().getId(),
-                saved.getShop().getShopName(),
-                saved.getShop().getOwnerFname(),
-                saved.getShop().getOwnerLname(),
-                saved.getShop().getHouseNumber(),
-                saved.getShop().getMoo(),
-                saved.getShop().getStreet(),
-                saved.getShop().getTumbon(),
-                saved.getShop().getAmper(),
-                saved.getShop().getProvince(),
-                saved.getShop().getPhone()
-        );
+    // ==========================
+    // Create / Update
+    // ==========================
 
-        return new RequestsDTO(
-                saved.getId(),
-                shopDTO,
-                saved.getVegeName(),
-                saved.getShopLocation(),
-                saved.getDateInspection(),
-                saved.getAppointmentDay(),
-                saved.getStatus()
-        );
+    @Transactional
+    public RequestsDTO createRequest(Request req) {
+        // ตรวจความถูกต้องของข้อมูลที่จำเป็น
+        if (req.getShop() == null || req.getShop().getId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "shop.id is required");
+        }
+        if (req.getShopLocation() == null || req.getShopLocation().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "shopLocation is required (format: 'lat,lng')");
+        }
+
+        // แยก lat,lng จากสตริง "lat,lng"
+        double[] ll = parseLatLng(req.getShopLocation());
+        double lat = ll[0];
+        double lng = ll[1];
+
+        // ✅ กันพิกัดซ้ำในตาราง requests (ร้านอื่นใช้พิกัดเดียวกันอยู่)
+        if (isLocationUsedByAnother(req.getShop().getId(), lat, lng)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "ตำแหน่งนี้ถูกใช้ในคำขอของร้านอื่นแล้ว");
+        }
+
+        // บันทึก
+        Request saved = repository.save(req);
+        return mapToDTO(saved);  // เติม resuId ให้ด้วยถ้ามี
     }
 
     @Transactional
     public Request updateStatus(Long requestId, String status) {
         Request request = repository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Request not found with id: " + requestId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Request not found with id: " + requestId));
         request.setStatus(status);
         return repository.save(request);
-    }
-
-    public List<Request> getAllRequests() {
-        return repository.findAll();
     }
 
     @Transactional
     public Request updateAppointmentDay(Long requestId, LocalDate appointmentDay) {
         Request request = repository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Request not found with id: " + requestId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Request not found with id: " + requestId));
         request.setAppointmentDay(appointmentDay);
         return repository.save(request);
     }
@@ -88,6 +100,7 @@ public class RequestService {
         }
         repository.saveAll(requests);
     }
+
     @Transactional
     public void updateStatusByAppointmentDayAndShop(Long shopId, LocalDate appointmentDay, String status) {
         List<Request> requests = repository.findByShopIdAndAppointmentDay(shopId, appointmentDay);
@@ -97,32 +110,15 @@ public class RequestService {
         repository.saveAll(requests);
     }
 
+    // ==========================
+    // Grouped endpoints (คงลอจิกเดิม)
+    // ==========================
 
     public List<GroupedRequestDTO> getRequestsGroupedByDateInspectionByShop(Long shopId) {
         List<Request> requests = repository.findByShopId(shopId);
 
         Map<LocalDate, List<RequestsDTO>> grouped = requests.stream()
-                .map(r -> new RequestsDTO(
-                        r.getId(),
-                        new ShopsDTO(
-                                r.getShop().getId(),
-                                r.getShop().getShopName(),
-                                r.getShop().getOwnerFname(),
-                                r.getShop().getOwnerLname(),
-                                r.getShop().getHouseNumber(),
-                                r.getShop().getMoo(),
-                                r.getShop().getStreet(),
-                                r.getShop().getTumbon(),
-                                r.getShop().getAmper(),
-                                r.getShop().getProvince(),
-                                r.getShop().getPhone()
-                        ),
-                        r.getVegeName(),
-                        r.getShopLocation(),
-                        r.getDateInspection(),
-                        r.getAppointmentDay(),
-                        r.getStatus()
-                ))
+                .map(this::mapToDTO)
                 .collect(Collectors.groupingBy(RequestsDTO::getDateInspection));
 
         return grouped.entrySet().stream()
@@ -134,27 +130,7 @@ public class RequestService {
         List<Request> requests = repository.findAll();
 
         Map<LocalDate, List<RequestsDTO>> grouped = requests.stream()
-                .map(r -> new RequestsDTO(
-                        r.getId(),
-                        new ShopsDTO(
-                                r.getShop().getId(),
-                                r.getShop().getShopName(),
-                                r.getShop().getOwnerFname(),
-                                r.getShop().getOwnerLname(),
-                                r.getShop().getHouseNumber(),
-                                r.getShop().getMoo(),
-                                r.getShop().getStreet(),
-                                r.getShop().getTumbon(),
-                                r.getShop().getAmper(),
-                                r.getShop().getProvince(),
-                                r.getShop().getPhone()
-                        ),
-                        r.getVegeName(),
-                        r.getShopLocation(),
-                        r.getDateInspection(),
-                        r.getAppointmentDay(),
-                        r.getStatus()
-                ))
+                .map(this::mapToDTO)
                 .collect(Collectors.groupingBy(RequestsDTO::getDateInspection));
 
         return grouped.entrySet().stream()
@@ -165,64 +141,81 @@ public class RequestService {
     public List<GroupedRequestDTO> getRequestsGroupedByDate(Long shopId) {
         List<Request> requests = repository.findByShopId(shopId);
 
-        // Group by dateInspection
         Map<LocalDate, List<RequestsDTO>> grouped = requests.stream()
-                .map(r -> new RequestsDTO(
-                        r.getId(),
-                        new ShopsDTO(
-                                r.getShop().getId(),
-                                r.getShop().getShopName(),
-                                r.getShop().getOwnerFname(),
-                                r.getShop().getOwnerLname(),
-                                r.getShop().getHouseNumber(),
-                                r.getShop().getMoo(),
-                                r.getShop().getStreet(),
-                                r.getShop().getTumbon(),
-                                r.getShop().getAmper(),
-                                r.getShop().getProvince(),
-                                r.getShop().getPhone()
-                        ),
-                        r.getVegeName(),
-                        r.getShopLocation(),
-                        r.getDateInspection(),
-                        r.getAppointmentDay(),
-                        r.getStatus()
-                ))
+                .map(this::mapToDTO)
                 .collect(Collectors.groupingBy(RequestsDTO::getDateInspection));
 
-        // แปลงเป็น List<GroupedRequestDTO>
         return grouped.entrySet().stream()
                 .map(entry -> new GroupedRequestDTO(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
     }
+
     public GroupedRequestDTO getRequestsGroupedByDateInspectionByShopAndDate(Long shopId, LocalDate dateInspection) {
         List<Request> requests = repository.findByShopIdAndDateInspection(shopId, dateInspection);
 
         List<RequestsDTO> dtoList = requests.stream()
-                .map(r -> new RequestsDTO(
-                        r.getId(),
-                        new ShopsDTO(
-                                r.getShop().getId(),
-                                r.getShop().getShopName(),
-                                r.getShop().getOwnerFname(),
-                                r.getShop().getOwnerLname(),
-                                r.getShop().getHouseNumber(),
-                                r.getShop().getMoo(),
-                                r.getShop().getStreet(),
-                                r.getShop().getTumbon(),
-                                r.getShop().getAmper(),
-                                r.getShop().getProvince(),
-                                r.getShop().getPhone()
-                        ),
-                        r.getVegeName(),
-                        r.getShopLocation(),
-                        r.getDateInspection(),
-                        r.getAppointmentDay(),
-                        r.getStatus()
-                ))
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
 
         return new GroupedRequestDTO(dateInspection, dtoList);
     }
 
+    // ==========================
+    // Helpers
+    // ==========================
+
+    /** แยก "lat,lng" → double[]{lat, lng} และ validate รูปแบบ */
+    private double[] parseLatLng(String shopLocation) {
+        String[] parts = shopLocation.split(",");
+        if (parts.length != 2) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "shopLocation format must be 'lat,lng'");
+        }
+        try {
+            double lat = Double.parseDouble(parts[0].trim());
+            double lng = Double.parseDouble(parts[1].trim());
+            return new double[]{lat, lng};
+        } catch (NumberFormatException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid latitude/longitude");
+        }
+    }
+
+    /** เรียก Repository เพื่อตรวจว่าพิกัดนี้ถูกใช้โดย “ร้านอื่น” ในตาราง requests แล้วหรือยัง */
+    public boolean isLocationUsedByAnother(Long shopId, double lat, double lng) {
+        Integer dup = repository.existsSameLocationInRequests(shopId, lat, lng);
+        return dup != null && dup == 1;
+    }
+
+    /** map Entity → DTO และเติม resuId (ถ้ามีผลตรวจ) */
+    private RequestsDTO mapToDTO(Request r) {
+        ShopsDTO shopDTO = new ShopsDTO(
+                r.getShop().getId(),
+                r.getShop().getShopName(),
+                r.getShop().getOwnerFname(),
+                r.getShop().getOwnerLname(),
+                r.getShop().getHouseNumber(),
+                r.getShop().getMoo(),
+                r.getShop().getStreet(),
+                r.getShop().getTumbon(),
+                r.getShop().getAmper(),
+                r.getShop().getProvince(),
+                r.getShop().getPhone()
+        );
+
+        RequestsDTO dto = new RequestsDTO(
+                r.getId(),
+                shopDTO,
+                r.getVegeName(),
+                r.getShopLocation(),
+                r.getDateInspection(),
+                r.getAppointmentDay(),
+                r.getStatus()
+        );
+
+        // เติม resuId จากผลตรวจ (ถ้ามี)
+        resultsRepository.findByRequest_Id(r.getId())
+                .ifPresent(res -> dto.setResuId(res.getId()));
+
+        return dto;
+    }
 }
